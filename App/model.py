@@ -29,8 +29,10 @@ from DISClib.ADT import map as m
 from DISClib.ADT import list as lt
 from DISClib.Algorithms.Graphs import scc
 from DISClib.Algorithms.Graphs import dijsktra as djk
-# TODO Lab 11, agregar importaciones dfs y bfs
 from DISClib.Utils import error as error
+# TODO mods Lab 11, agregar importaciones dfs y bfs
+from DISClib.Algorithms.Graphs import dfs as dfs
+from DISClib.Algorithms.Graphs import bfs as bfs
 assert config
 
 """
@@ -53,12 +55,14 @@ def newAnalyzer():
            vertice determinado a todos los otros vértices del grafo
     """
     try:
-        # TODO Lab 11, agregar llave "search" para usar dfs y bfs
+        # TODO mods Lab 11, agregar llave "search" para usar dfs y bfs
         analyzer = {
             'stops': None,
             'connections': None,
             'components': None,
             'paths': None,
+            'search': None
+            
         }
 
         analyzer['stops'] = m.newMap(numelements=14000,
@@ -192,17 +196,7 @@ def hasPath(analyzer, destStation):
     return djk.hasPathTo(analyzer['paths'], destStation)
 
 
-def minimumCostPath(analyzer, destStation):
-    """
-    Retorna el camino de costo minimo entre la estacion de inicio
-    y la estacion destino
-    Se debe ejecutar primero la funcion minimumCostPaths
-    """
-    path = djk.pathTo(analyzer['paths'], destStation)
-    return path
-
-
-def searchPaths(analyzer, initialStation, method):
+def searchPaths(analyzer, initialStation, method="dfs"):
     """
     searchPaths Calcula los caminos posibles desde una estacion de origen
     y puede utilizar los algoritmos "dfs" o "bfs"
@@ -215,16 +209,18 @@ def searchPaths(analyzer, initialStation, method):
     Returns:
         dict: devuelve el analyzer del modelo
     """
-    # TODO Lab 11, ejectutar DepthFirstSearch de dfs
+    # TODO mods Lab 11, ejectutar DepthFirstSearch de dfs
     if method == "dfs":
-        pass
+        analyzer['search'] = dfs.DepthFirstSearch(analyzer['connections'],
+                                                  initialStation)
     # TODO Lab 11, ejectutar BreadhtFisrtSearch de bfs
     elif method == "bfs":
-        pass
+        analyzer['search'] = bfs.BreadhtFisrtSearch(analyzer['connections'],
+                                                    initialStation)
     return analyzer
 
 
-def hasSearchPath(analyzer, destStation, method):
+def hasSearchPath(analyzer, destStation, method="dfs"):
     """
     hasSearchPath indica si existe un camino desde la estacion inicial a
     la estación destino. Se debe ejecutar primero la funcion searchPaths()
@@ -234,15 +230,16 @@ def hasSearchPath(analyzer, destStation, method):
         destStation (vertice): estacion de destino para el recorrido
         method (str, optional): algoritmo de busqueda. Por defecto es "dfs"
     """
-    # TODO Lab 11, ejectutar hasPathTo por dfs
+    
+    # TODO Lab 11, ejectutar hasSearchPath por dfs
     if method == "dfs":
-        return None
-    # TODO Lab 11, ejectutar hasPathTo por bfs
+        return dfs.hasPathTo(analyzer['search'], destStation)
+    # TODO Lab 11, ejectutar hasSearchPath por bfs
     elif method == "bfs":
-        return None
+        return bfs.hasPathTo(analyzer['search'], destStation)
 
 
-def searchPathTo(analyzer, destStation, method):
+def searchPathTo(analyzer, destStation, method="dfs"):
     """
     searchPath retorna el camino de encontrado entre la estacion de inicio
     y la estacion destino Se debe ejecutar primero la funcion searchPaths
@@ -258,10 +255,20 @@ def searchPathTo(analyzer, destStation, method):
     path = None
     # TODO Lab 11, ejectutar pathTo por dfs
     if method == "dfs":
-        pass
+        path = dfs.pathTo(analyzer['search'], destStation)
     # TODO Lab 11, ejectutar pathTo por bfs
     elif method == "bfs":
-        pass
+        path = dfs.pathTo(analyzer['search'], destStation)
+    return path
+
+
+def minimumCostPath(analyzer, destStation):
+    """
+    Retorna el camino de costo minimo entre la estacion de inicio
+    y la estacion destino
+    Se debe ejecutar primero la funcion minimumCostPaths
+    """
+    path = djk.pathTo(analyzer['paths'], destStation)
     return path
 
 
